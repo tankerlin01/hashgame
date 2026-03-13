@@ -1,11 +1,12 @@
 {
-  "name": "temp-vite-project",
+  "name": "hashgame-ai",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "homepage": "https://tankerlin01.github.io/hashgame/",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vue-tsc -b && vite build --base=/hashgame/",
     "preview": "vite preview"
   },
   "dependencies": {
