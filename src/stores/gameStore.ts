@@ -19,6 +19,77 @@ export interface Strategy {
   win_rate?: number
 }
 
+// 真实历史数据
+const realGameData: { id: string; result: string }[] = [
+  { id: '940600', result: 'a' },
+  { id: '940599', result: 'c' },
+  { id: '940598', result: '4' },
+  { id: '940597', result: '8' },
+  { id: '940596', result: 'd' },
+  { id: '940595', result: 'f' },
+  { id: '940594', result: 'c' },
+  { id: '940593', result: '8' },
+  { id: '940592', result: '3' },
+  { id: '940591', result: 'd' },
+  { id: '940590', result: 'b' },
+  { id: '940589', result: 'f' },
+  { id: '940588', result: '1' },
+  { id: '940587', result: '7' },
+  { id: '940586', result: 'f' },
+  { id: '940585', result: '0' },
+  { id: '940584', result: 'c' },
+  { id: '940583', result: '7' },
+  { id: '940582', result: '8' },
+  { id: '940581', result: '4' },
+  { id: '940580', result: '4' },
+  { id: '940579', result: '2' },
+  { id: '940578', result: 'e' },
+  { id: '940577', result: 'e' },
+  { id: '940576', result: 'c' },
+  { id: '940575', result: 'f' },
+  { id: '940574', result: '7' },
+  { id: '940573', result: '4' },
+  { id: '940572', result: '8' },
+  { id: '940571', result: '0' },
+  { id: '940570', result: 'd' },
+  { id: '940569', result: '0' },
+  { id: '940568', result: 'b' },
+  { id: '940567', result: '6' },
+  { id: '940566', result: 'a' },
+  { id: '940565', result: 'a' },
+  { id: '940564', result: '7' },
+  { id: '940563', result: 'b' },
+  { id: '940562', result: '3' },
+  { id: '940561', result: '7' },
+  { id: '940560', result: 'c' },
+  { id: '940559', result: '8' },
+  { id: '940558', result: 'a' },
+  { id: '940557', result: 'd' },
+  { id: '940556', result: 'e' },
+  { id: '940555', result: 'f' },
+  { id: '940554', result: '3' },
+  { id: '940553', result: 'b' },
+  { id: '940552', result: 'b' },
+  { id: '940551', result: '4' },
+  { id: '940550', result: '9' },
+  { id: '940549', result: '0' },
+  { id: '940548', result: 'a' },
+  { id: '940547', result: 'b' },
+  { id: '940546', result: 'c' },
+  { id: '940545', result: '4' },
+  { id: '940544', result: '1' },
+]
+
+const loadRealGames = (): Game[] => {
+  return realGameData.map((item, index) => ({
+    game_id: item.id,
+    block_height: 385729100 + index,
+    result: item.result,
+    game_type: index % 3 === 0 ? 'tournament' : 'classic',
+    created_at: new Date(Date.now() - index * 60000).toISOString()
+  }))
+}
+
 export const useGameStore = defineStore('game', () => {
   // State
   const games = ref<Game[]>([])
@@ -62,6 +133,10 @@ export const useGameStore = defineStore('game', () => {
     const saved = localStorage.getItem('hashgame_games')
     if (saved) {
       games.value = JSON.parse(saved)
+    } else {
+      // 首次加载使用真实数据
+      games.value = loadRealGames()
+      saveGames()
     }
   }
 
