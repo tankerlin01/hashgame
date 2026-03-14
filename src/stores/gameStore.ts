@@ -19,6 +19,13 @@ export interface Strategy {
   win_rate?: number
 }
 
+export interface UpdateRecord {
+  id: string
+  updated_at: string
+  gameIds: string[]
+  displayText: string
+}
+
 // 真实历史数据
 const realGameData: { id: string; result: string }[] = [
   { id: '940600', result: 'a' },
@@ -94,6 +101,7 @@ export const useGameStore = defineStore('game', () => {
   // State
   const games = ref<Game[]>([])
   const strategies = ref<Strategy[]>([])
+  const updateRecords = ref<UpdateRecord[]>([])
   const loading = ref(false)
 
   // Getters
@@ -160,6 +168,22 @@ export const useGameStore = defineStore('game', () => {
     localStorage.setItem('hashgame_strategies', JSON.stringify(strategies.value))
   }
 
+  const loadUpdateRecords = () => {
+    const saved = localStorage.getItem('hashgame_update_records')
+    if (saved) {
+      updateRecords.value = JSON.parse(saved)
+    }
+  }
+
+  const saveUpdateRecords = () => {
+    localStorage.setItem('hashgame_update_records', JSON.stringify(updateRecords.value))
+  }
+
+  const addUpdateRecord = (record: UpdateRecord) => {
+    updateRecords.value.unshift(record)
+    saveUpdateRecords()
+  }
+
   const addStrategy = (strategy: Strategy) => {
     strategies.value.unshift(strategy)
     saveStrategies()
@@ -176,6 +200,7 @@ export const useGameStore = defineStore('game', () => {
   return {
     games,
     strategies,
+    updateRecords,
     loading,
     totalGames,
     charStats,
@@ -185,6 +210,8 @@ export const useGameStore = defineStore('game', () => {
     addGame,
     loadStrategies,
     addStrategy,
-    updateStrategy
+    updateStrategy,
+    loadUpdateRecords,
+    addUpdateRecord
   }
 })
