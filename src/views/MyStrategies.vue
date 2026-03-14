@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useGameStore, Strategy } from '../stores/gameStore'
+import { useGameStore } from '../stores/gameStore'
 
 const gameStore = useGameStore()
 const statusFilter = ref('all')

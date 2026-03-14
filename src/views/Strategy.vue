@@ -101,7 +101,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useGameStore } from '../stores/gameStore'
+import { useGameStore, type Strategy } from '../stores/gameStore'
 
 const gameStore = useGameStore()
 const selectedRounds = ref(5)
@@ -160,7 +160,7 @@ const generateStrategy = async () => {
 }
 
 const saveStrategy = () => {
-  const strategy = {
+  const strategy: Strategy = {
     id: Date.now().toString(),
     created_at: new Date().toISOString(),
     rounds: selectedRounds.value,

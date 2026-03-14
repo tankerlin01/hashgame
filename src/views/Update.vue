@@ -74,7 +74,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useGameStore } from '../stores/gameStore'
+import { useGameStore, type Game } from '../stores/gameStore'
 
 const gameStore = useGameStore()
 const imageUrl = ref('')
@@ -109,9 +109,11 @@ const handleUpload = async (options: any) => {
 }
 
 const saveResult = () => {
-  const newGame = {
-    ...resultForm.value,
+  const newGame: Game = {
+    game_id: resultForm.value.game_id,
     block_height: parseInt(resultForm.value.block_height, 10),
+    result: resultForm.value.result,
+    game_type: resultForm.value.game_type as 'classic' | 'tournament',
     created_at: new Date().toISOString()
   }
   
