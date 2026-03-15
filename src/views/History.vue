@@ -40,11 +40,18 @@
       
       <!-- Game List -->
       <div class="game-list">
-        <h4>🎮 游戏记录</h4>
+        <div class="game-list-header">
+          <h4>🎮 游戏记录</h4>
+          <el-input
+            v-model="gameIdFilter"
+            placeholder="输入 Game ID 筛选"
+            clearable
+            style="width: 200px"
+          />
+        </div>
         
-        <el-table :data="games" stripe style="width: 100%">
+        <el-table :data="filteredGames" stripe style="width: 100%">
           <el-table-column prop="game_id" label="Game ID" width="120" />
-          <el-table-column prop="block_height" label="区块高度" width="150" />
           <el-table-column label="开奖结果" width="100">
             <template #default="{ row }">
               <el-tag :type="getResultType(row.result)" effect="dark">
@@ -52,14 +59,11 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="game_type" label="类型" width="100">
+          <el-table-column label="时间" min-width="180">
             <template #default="{ row }">
-              <el-tag :type="row.game_type === 'classic' ? 'primary' : 'success'">
-                {{ row.game_type === 'classic' ? '经典赛' : '锦标赛' }}
-              </el-tag>
+              {{ formatBeijingTime(row.created_at) }}
             </template>
           </el-table-column>
-          <el-table-column prop="created_at" label="时间" />
         </el-table>
         
         <div class="load-more">
@@ -77,6 +81,7 @@ import { useGameStore } from '../stores/gameStore'
 const gameStore = useGameStore()
 const range = ref('100')
 const pageSize = ref(20)
+const gameIdFilter = ref('')
 
 const ranges = [
   { label: '最近100轮', value: '100' },
@@ -89,7 +94,18 @@ const ranges = [
 
 const chars = '0123456789abcdef'.split('')
 
-const games = computed(() => gameStore.games.slice(0, pageSize.value))
+// 根据 game id 筛选游戏记录
+const filteredGames = computed(() => {
+  let result = gameStore.games
+  
+  // 根据 game id 筛选
+  if (gameIdFilter.value.trim()) {
+    const filter = gameIdFilter.value.trim().toLowerCase()
+    result = result.filter(game => game.game_id.toLowerCase().includes(filter))
+  }
+  
+  return result.slice(0, pageSize.value)
+})
 
 const currentStats = computed(() => {
   if (range.value === 'all') {
@@ -109,6 +125,21 @@ const coldChars = computed(() => sortedChars.value.slice(-3))
 
 const isHotChar = (char: string) => hotChars.value.includes(char)
 const isColdChar = (char: string) => coldChars.value.includes(char)
+
+// 格式化为北京时间
+const formatBeijingTime = (isoString: string): string => {
+  const date = new Date(isoString)
+  return date.toLocaleString('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  })
+}
 
 const getTrend = (char: string) => {
   // Compare recent 100 vs previous 100
@@ -200,6 +231,17 @@ onMounted(() => {
 
 .game-list {
   margin-top: 20px;
+}
+
+.game-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.game-list-header h4 {
+  margin: 0;
 }
 
 .load-more {
